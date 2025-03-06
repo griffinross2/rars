@@ -62,48 +62,58 @@ public class Launch {
 
     /**
      * Main takes a number of command line arguments.<br>
-     * Usage:  rars  [options] filename<br>
+     * Usage: rars [options] filename<br>
      * Valid options (not case sensitive, separate by spaces) are:<br>
-     * a  -- assemble only, do not simulate<br>
-     * ad  -- both a and d<br>
-     * ae<n>  -- terminate RARS with integer exit code <n> if an assemble error occurs.<br>
-     * ascii  -- display memory or register contents interpreted as ASCII
-     * b  -- brief - do not display register/memory address along with contents<br>
-     * d  -- print debugging statements<br>
-     * da  -- both a and d<br>
-     * dec  -- display memory or register contents in decimal.<br>
-     * dump  -- dump memory contents to file.  Option has 3 arguments, e.g. <br>
-     * <tt>dump &lt;segment&gt; &lt;format&gt; &lt;file&gt;</tt>.  Also supports<br>
-     * an address range (see <i>m-n</i> below).  Current supported <br>
-     * segments are <tt>.text</tt> and <tt>.data</tt>.  Current supported dump formats <br>
+     * a -- assemble only, do not simulate<br>
+     * ad -- both a and d<br>
+     * ae<n> -- terminate RARS with integer exit code <n> if an assemble error
+     * occurs.<br>
+     * ascii -- display memory or register contents interpreted as ASCII
+     * b -- brief - do not display register/memory address along with contents<br>
+     * d -- print debugging statements<br>
+     * da -- both a and d<br>
+     * dec -- display memory or register contents in decimal.<br>
+     * dump -- dump memory contents to file. Option has 3 arguments, e.g. <br>
+     * <tt>dump &lt;segment&gt; &lt;format&gt; &lt;file&gt;</tt>. Also supports<br>
+     * an address range (see <i>m-n</i> below). Current supported <br>
+     * segments are <tt>.text</tt> and <tt>.data</tt>. Current supported dump
+     * formats <br>
      * are <tt>Binary</tt>, <tt>HexText</tt>, <tt>BinaryText</tt>.<br>
-     * g  -- force GUI mode
-     * h  -- display help.  Use by itself and with no filename</br>
-     * hex  -- display memory or register contents in hexadecimal (default)<br>
-     * ic  -- display count of basic instructions 'executed'");
-     * mc  -- set memory configuration.  Option has 1 argument, e.g.<br>
+     * g -- force GUI mode
+     * h -- display help. Use by itself and with no filename</br>
+     * hex -- display memory or register contents in hexadecimal (default)<br>
+     * ic -- display count of basic instructions 'executed'");
+     * mc -- set memory configuration. Option has 1 argument, e.g.<br>
      * <tt>mc &lt;config$gt;</tt>, where &lt;config$gt; is <tt>Default</tt><br>
      * for the RARS default 32-bit address space, <tt>CompactDataAtZero</tt> for<br>
-     * a 32KB address space with data segment at address 0, or <tt>CompactTextAtZero</tt><br>
+     * a 32KB address space with data segment at address 0, or
+     * <tt>CompactTextAtZero</tt><br>
      * for a 32KB address space with text segment at address 0.<br>
-     * me  -- display RARS messages to standard err instead of standard out. Can separate via redirection.</br>
-     * nc  -- do not display copyright notice (for cleaner redirected/piped output).</br>
-     * np  -- No Pseudo-instructions allowed ("ne" will work also).<br>
-     * p  -- Project mode - assemble all files in the same directory as given file.<br>
-     * se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.<br>
-     * sm  -- Start execution at Main - Execution will start at program statement globally labeled main.<br>
-     * smc  -- Self Modifying Code - Program can write and branch to either text or data segment<br>
-     * we  -- assembler Warnings will be considered Errors<br>
-     * <n>  -- where <n> is an integer maximum count of steps to simulate.<br>
+     * me -- display RARS messages to standard err instead of standard out. Can
+     * separate via redirection.</br>
+     * nc -- do not display copyright notice (for cleaner redirected/piped
+     * output).</br>
+     * np -- No Pseudo-instructions allowed ("ne" will work also).<br>
+     * p -- Project mode - assemble all files in the same directory as given
+     * file.<br>
+     * se<n> -- terminate RARS with integer exit code <n> if a simulation (run)
+     * error occurs.<br>
+     * sm -- Start execution at Main - Execution will start at program statement
+     * globally labeled main.<br>
+     * smc -- Self Modifying Code - Program can write and branch to either text or
+     * data segment<br>
+     * we -- assembler Warnings will be considered Errors<br>
+     * <n> -- where <n> is an integer maximum count of steps to simulate.<br>
      * If 0, negative or not specified, there is no maximum.<br>
-     * $<reg>  -- where <reg> is number or name (e.g. 5, t3, f10) of register whose <br>
-     * content to display at end of run.  Option may be repeated.<br>
-     * <reg_name>  -- where <reg_name> is name (e.g. t3, f10) of register whose <br>
-     * content to display at end of run.  Option may be repeated. $ not required.<br>
-     * <m>-<n>  -- memory address range from <m> to <n> whose contents to<br>
+     * $<reg> -- where <reg> is number or name (e.g. 5, t3, f10) of register whose
+     * <br>
+     * content to display at end of run. Option may be repeated.<br>
+     * <reg_name> -- where <reg_name> is name (e.g. t3, f10) of register whose <br>
+     * content to display at end of run. Option may be repeated. $ not required.<br>
+     * <m>-<n> -- memory address range from <m> to <n> whose contents to<br>
      * display at end of run. <m> and <n> may be hex or decimal,<br>
-     * <m> <= <n>, both must be on word boundary.  Option may be repeated.<br>
-     * pa  -- Program Arguments follow in a space-separated list.  This<br>
+     * <m> <= <n>, both must be on word boundary. Option may be repeated.<br>
+     * pa -- Program Arguments follow in a space-separated list. This<br>
      * option must be placed AFTER ALL FILE NAMES, because everything<br>
      * that follows it is interpreted as a program argument to be<br>
      * made available to the program at runtime.<br>
@@ -114,7 +124,7 @@ public class Launch {
     private boolean simulate;
     private boolean rv64;
     private int displayFormat;
-    private boolean verbose;  // display register name or address along with contents
+    private boolean verbose; // display register name or address along with contents
     private boolean assembleProject; // assemble only the given file or all files in its directory
     private boolean countInstructions; // Whether to count and report number of instructions executed
     private static final String rangeSeparator = "-";
@@ -129,12 +139,13 @@ public class Launch {
     private PrintStream out; // stream for display of command line output
     private ArrayList<String[]> dumpTriples = null; // each element holds 3 arguments for dump option
     private ArrayList<String> programArgumentList; // optional program args for program (becomes argc, argv)
-    private int assembleErrorExitCode;  // RARS command exit code to return if assemble error occurs
+    private int assembleErrorExitCode; // RARS command exit code to return if assemble error occurs
     private int simulateErrorExitCode;// RARS command exit code to return if simulation error occurs
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new Launch(args);
     }
+
     private Launch(String[] args) {
         Globals.initialize();
 
@@ -157,13 +168,14 @@ public class Launch {
         if (!parseCommandArgs(args)) {
             System.exit(Globals.exitCode);
         }
-        
+
         if (gui) {
             launchIDE();
         } else { // running from command line.
-            // assure command mode works in headless environment (generates exception if not)
+            // assure command mode works in headless environment (generates exception if
+            // not)
             System.setProperty("java.awt.headless", "true");
-            
+
             dumpSegments(runCommand());
             System.exit(Globals.exitCode);
         }
@@ -175,7 +187,7 @@ public class Launch {
         displayMemoryPostMortem(program.getMemory());
     }
     /////////////////////////////////////////////////////////////
-    // Perform any specified dump operations.  See "dump" option.
+    // Perform any specified dump operations. See "dump" option.
     //
 
     private void dumpSegments(Program program) {
@@ -185,7 +197,7 @@ public class Launch {
         for (String[] triple : dumpTriples) {
             File file = new File(triple[2]);
             Integer[] segInfo = MemoryDump.getSegmentBounds(triple[0]);
-            // If not segment name, see if it is address range instead.  DPS 14-July-2008
+            // If not segment name, see if it is address range instead. DPS 14-July-2008
             if (segInfo == null) {
                 try {
                     String[] memoryRange = checkMemoryAddressRange(triple[0]);
@@ -208,45 +220,41 @@ public class Launch {
                 continue;
             }
             try {
-                int highAddress = program.getMemory().getAddressOfFirstNull(segInfo[0], segInfo[1]) - Memory.WORD_LENGTH_BYTES;
-                if (highAddress < segInfo[0]) {
-                    out.println("This segment has not been written to, there is nothing to dump.");
-                    continue;
-                }
-                format.dumpMemoryRange(file, segInfo[0], highAddress, program.getMemory());
+                int highAddress = Math.max(Memory.dataSegmentLimitAddress, Memory.textLimitAddress);
+                format.dumpMemoryRange(file, 0, highAddress, program.getMemory());
             } catch (FileNotFoundException e) {
                 out.println("Error while attempting to save dump, file " + file + " was not found!");
             } catch (AddressErrorException e) {
-                out.println("Error while attempting to save dump, file " + file + "!  Could not access address: " + e.getAddress() + "!");
+                out.println("Error while attempting to save dump, file " + file + "!  Could not access address: "
+                        + e.getAddress() + "!");
             } catch (IOException e) {
                 out.println("Error while attempting to save dump, file " + file + "!  Disk IO failed!");
             }
         }
     }
 
-
     /////////////////////////////////////////////////////////////////
     // There are no command arguments, so run in interactive mode by
     // launching the GUI-fronted integrated development environment.
 
     private void launchIDE() {
-        // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu on Mac OS menu bar
+        // System.setProperty("apple.laf.useScreenMenuBar", "true"); // Puts RARS menu
+        // on Mac OS menu bar
         SwingUtilities.invokeLater(
                 new Runnable() {
                     public void run() {
-                        //Turn off metal's use of bold fonts
-                        //UIManager.put("swing.boldMetal", Boolean.FALSE);
+                        // Turn off metal's use of bold fonts
+                        // UIManager.put("swing.boldMetal", Boolean.FALSE);
                         new VenusUI("RARS " + Globals.version, filenameList);
                     }
                 });
     }
 
-
     //////////////////////////////////////////////////////////////////////
-    // Parse command line arguments.  The initial parsing has already been
+    // Parse command line arguments. The initial parsing has already been
     // done, since each space-separated argument is already in a String array
-    // element.  Here, we check for validity, set switch variables as appropriate
-    // and build data structures.  For help option (h), display the help.
+    // element. Here, we check for validity, set switch variables as appropriate
+    // and build data structures. For help option (h), display the help.
     // Returns true if command args parse OK, false otherwise.
 
     private boolean parseCommandArgs(String[] args) {
@@ -261,7 +269,7 @@ public class Launch {
         // it must be processed before any others (since messages may be
         // generated during option parsing).
         processDisplayMessagesToErrSwitch(args, displayMessagesToErrSwitch);
-        displayCopyright(args, noCopyrightSwitch);  // ..or not..
+        displayCopyright(args, noCopyrightSwitch); // ..or not..
         if (args.length == 1 && args[0].equals("h")) {
             displayHelp();
             return false;
@@ -297,8 +305,8 @@ public class Launch {
                 } else {
                     if (dumpTriples == null)
                         dumpTriples = new ArrayList<>();
-                    dumpTriples.add(new String[]{args[++i], args[++i], args[++i]});
-                    //simulate = false;
+                    dumpTriples.add(new String[] { args[++i], args[++i], args[++i] });
+                    // simulate = false;
                 }
                 continue;
             }
@@ -395,8 +403,12 @@ public class Launch {
                 countInstructions = true;
                 continue;
             }
-            
-            if (new File(args[i]).exists()) {  // is it a file name?
+            if (args[i].toLowerCase().equals("eeb")) {
+                options.exitOnEbreak = true;
+                continue;
+            }
+
+            if (new File(args[i]).exists()) { // is it a file name?
                 filenameList.add(args[i]);
                 continue;
             }
@@ -410,7 +422,7 @@ public class Launch {
                 }
                 continue;
             }
-            // check for register name w/o $.  added 14-July-2008 DPS
+            // check for register name w/o $. added 14-July-2008 DPS
             if (RegisterFile.getRegister(args[i]) != null ||
                     FloatingPointRegisterFile.getRegister(args[i]) != null ||
                     ControlAndStatusRegisterFile.getRegister(args[i]) != null) {
@@ -435,14 +447,13 @@ public class Launch {
                 argsOK = false;
                 continue;
             } catch (NullPointerException npe) {
-                // Do nothing.  next statement will handle it
+                // Do nothing. next statement will handle it
             }
             out.println("Invalid Command Argument: " + args[i]);
             argsOK = false;
         }
         return argsOK;
     }
-
 
     //////////////////////////////////////////////////////////////////////
     // Carry out the rars command: assemble then optionally run
@@ -453,7 +464,7 @@ public class Launch {
             return null;
         }
 
-        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED,rv64);
+        Globals.getSettings().setBooleanSettingNonPersistent(Settings.Bool.RV64_ENABLED, rv64);
         InstructionSet.rv64 = rv64;
         Globals.instructionSet.populate();
 
@@ -465,14 +476,15 @@ public class Launch {
                 // Using "p" project option PLUS listing more than one filename on command line.
                 // Add the additional files, avoiding duplicates.
                 filenameList.remove(0); // first one has already been processed
-                ArrayList<String> moreFilesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
+                ArrayList<String> moreFilesToAssemble = FilenameFinder.getFilenameList(filenameList,
+                        FilenameFinder.MATCH_ALL_EXTENSIONS);
                 // Remove any duplicates then merge the two lists.
                 for (int index2 = 0; index2 < moreFilesToAssemble.size(); index2++) {
                     for (int index1 = 0; index1 < filesToAssemble.size(); index1++) {
                         if (filesToAssemble.get(index1).equals(moreFilesToAssemble.get(index2))) {
                             moreFilesToAssemble.remove(index2);
                             index2--; // adjust for left shift in moreFilesToAssemble...
-                            break;    // break out of inner loop...
+                            break; // break out of inner loop...
                         }
                     }
                 }
@@ -482,6 +494,8 @@ public class Launch {
             filesToAssemble = FilenameFinder.getFilenameList(filenameList, FilenameFinder.MATCH_ALL_EXTENSIONS);
         }
         Program program = new Program(options);
+        Globals.getSettings().setBooleanSetting(Settings.Bool.SELF_MODIFYING_CODE_ENABLED, options.selfModifyingCode);
+        Globals.getSettings().setBooleanSetting(Settings.Bool.EXIT_ON_EBREAK, options.exitOnEbreak);
         try {
             if (Globals.debug) {
                 out.println("---  TOKENIZING & ASSEMBLY BEGINS  ---");
@@ -497,7 +511,7 @@ public class Launch {
             return null;
         }
         // Setup for program simulation even if just assembling to prepare memory dumps
-        program.setup(programArgumentList,null);
+        program.setup(programArgumentList, null);
         if (simulate) {
             if (Globals.debug) {
                 out.println("--------  SIMULATION BEGINS  -----------");
@@ -515,7 +529,8 @@ public class Launch {
                         out.println("\nProgram terminated by calling exit");
                         break;
                     }
-                    assert done == Simulator.Reason.BREAKPOINT : "Internal error: All cases other than breakpoints should be handled already";
+                    assert done == Simulator.Reason.BREAKPOINT
+                            : "Internal error: All cases other than breakpoints should be handled already";
                     displayAllPostMortem(program); // print registers if we hit a breakpoint, then continue
                 }
 
@@ -532,10 +547,9 @@ public class Launch {
         return program;
     }
 
-
     //////////////////////////////////////////////////////////////////////
-    // Check for memory address subrange.  Has to be two integers separated
-    // by "-"; no embedded spaces.  e.g. 0x00400000-0x00400010
+    // Check for memory address subrange. Has to be two integers separated
+    // by "-"; no embedded spaces. e.g. 0x00400000-0x00400010
     // If number is not multiple of 4, will be rounded up to next higher.
 
     private String[] checkMemoryAddressRange(String arg) throws NumberFormatException {
@@ -567,15 +581,14 @@ public class Launch {
         }
     }
 
-
     //////////////////////////////////////////////////////////////////////
     // Displays requested register or registers
 
     private void displayRegistersPostMortem(Program program) {
         // Display requested register contents
         for (String reg : registerDisplayList) {
-            if(FloatingPointRegisterFile.getRegister(reg) != null){
-                //TODO: do something for double vs float
+            if (FloatingPointRegisterFile.getRegister(reg) != null) {
+                // TODO: do something for double vs float
                 // It isn't clear to me what the best behaviour is
                 // floating point register
                 int ivalue = program.getRegisterValue(reg);
@@ -594,12 +607,12 @@ public class Launch {
                 } else { // displayFormat == ASCII
                     out.println(Binary.intToAscii(ivalue));
                 }
-            } else if (ControlAndStatusRegisterFile.getRegister(reg) != null){
+            } else if (ControlAndStatusRegisterFile.getRegister(reg) != null) {
                 out.print(reg + "\t");
-                out.println(formatIntForDisplay((int)ControlAndStatusRegisterFile.getRegister(reg).getValue()));
+                out.println(formatIntForDisplay((int) ControlAndStatusRegisterFile.getRegister(reg).getValue()));
             } else if (verbose) {
                 out.print(reg + "\t");
-                out.println(formatIntForDisplay((int)RegisterFile.getRegister(reg).getValue()));
+                out.println(formatIntForDisplay((int) RegisterFile.getRegister(reg).getValue()));
             }
         }
     }
@@ -641,7 +654,7 @@ public class Launch {
             int valuesDisplayed = 0;
             for (int addr = addressStart; addr <= addressEnd; addr += Memory.WORD_LENGTH_BYTES) {
                 if (addr < 0 && addressEnd > 0)
-                    break;  // happens only if addressEnd is 0x7ffffffc
+                    break; // happens only if addressEnd is 0x7ffffffc
                 if (valuesDisplayed % memoryWordsPerLine == 0) {
                     out.print((valuesDisplayed > 0) ? "\n" : "");
                     if (verbose) {
@@ -667,9 +680,9 @@ public class Launch {
     }
 
     ///////////////////////////////////////////////////////////////////////
-    //  If option to display RARS messages to standard err (System.err) is
-    //  present, it must be processed before all others.  Since messages may
-    //  be output as early as during the command parse.
+    // If option to display RARS messages to standard err (System.err) is
+    // present, it must be processed before all others. Since messages may
+    // be output as early as during the command parse.
     private void processDisplayMessagesToErrSwitch(String[] args, String displayMessagesToErrSwitch) {
         for (String arg : args) {
             if (arg.toLowerCase().equals(displayMessagesToErrSwitch)) {
@@ -679,8 +692,8 @@ public class Launch {
         }
     }
     ///////////////////////////////////////////////////////////////////////
-    //  Decide whether copyright should be displayed, and display
-    //  if so.
+    // Decide whether copyright should be displayed, and display
+    // if so.
 
     private void displayCopyright(String[] args, String noCopyrightSwitch) {
         for (String arg : args) {
@@ -688,12 +701,12 @@ public class Launch {
                 return;
             }
         }
-        out.println("RARS " + Globals.version + "  Copyright " + Globals.copyrightYears + " " + Globals.copyrightHolders + "\n");
+        out.println("RARS " + Globals.version + "  Copyright " + Globals.copyrightYears + " " + Globals.copyrightHolders
+                + "\n");
     }
 
-
     ///////////////////////////////////////////////////////////////////////
-    //  Display command line help text
+    // Display command line help text
 
     private void displayHelp() {
         String[] segmentNames = MemoryDump.getSegmentNames();
@@ -724,7 +737,7 @@ public class Launch {
         out.println("            in specified format to specified file.  Option may be repeated.");
         out.println("            Dump occurs at the end of simulation unless 'a' option is used.");
         out.println("            Segment and format are case-sensitive and possible values are:");
-        out.println("            <segment> = " + segments+", or a range like 0x400000-0x10000000");
+        out.println("            <segment> = " + segments + ", or a range like 0x400000-0x10000000");
         out.println("            <format> = " + formats);
         out.println("      g  -- force GUI mode");
         out.println("      h  -- display this help.  Use by itself with no filename.");
@@ -742,6 +755,7 @@ public class Launch {
         out.println("      p  -- Project mode - assemble all files in the same directory as given file.");
         out.println("  se<n>  -- terminate RARS with integer exit code <n> if a simulation (run) error occurs.");
         out.println("     sm  -- start execution at statement with global label main, if defined");
+        out.println("    eec  -- Exit on ebreak - Program exits on ebreak instruction");
         out.println("    smc  -- Self Modifying Code - Program can write and branch to either text or data segment");
         out.println("    rv64 -- Enables 64 bit assembly and executables (Not fully compatible with rv32)");
         out.println("    <n>  -- where <n> is an integer maximum count of steps to simulate.");
@@ -764,5 +778,3 @@ public class Launch {
     }
 
 }
-
-   	

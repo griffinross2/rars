@@ -35,13 +35,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /**
  * Models the collection of MIPS memory configurations.
- * The default configuration is based on SPIM.  Starting with MARS 3.7,
+ * The default configuration is based on SPIM. Starting with MARS 3.7,
  * the configuration can be changed.
  *
  * @author Pete Sanderson
  * @version August 2009
  */
-
 
 public class MemoryConfigurations {
 
@@ -51,7 +50,7 @@ public class MemoryConfigurations {
 
     // Be careful, these arrays are parallel and position-sensitive.
     // The getters in this and in MemoryConfiguration depend on this
-    // sequence.  Should be refactored...  The order comes from the
+    // sequence. Should be refactored... The order comes from the
     // original listed order in Memory.java, where most of these were
     // "final" until Mars 3.7 and changeable memory configurations.
     private static final String[] configurationItemNames = {
@@ -90,7 +89,7 @@ public class MemoryConfigurations {
             0x7fffffff, // data segment limit address
             0x0ffffffc, // text limit address
             0x10040000, // stack limit address
-            0xffffffff  // memory map limit address
+            0xffffffff // memory map limit address
     };
 
     // Compact allows 16 bit addressing, data segment starts at 0
@@ -110,7 +109,7 @@ public class MemoryConfigurations {
             0x00002fff, // data segment limit address
             0x00003ffc, // text limit address
             0x00002000, // stack limit address
-            0x00007fff  // memory map limit address
+            0x00007fff // memory map limit address
     };
 
     // Compact allows 16 bit addressing, text segment starts at 0
@@ -130,33 +129,59 @@ public class MemoryConfigurations {
             0x00003fff, // data segment limit address
             0x00000ffc, // text limit address
             0x00003000, // stack limit address
-            0x00007fff  // memory map limit address
+            0x00007fff // memory map limit address
     };
 
+    private static int[] customConfigurationItemValues = {
+            0x00000000, // .text Base Address
+            0x00010000, // Data Segment base address
+            0x00010000, // .extern Base Address
+            0x00018000, // Global Pointer $gp)
+            0x00020000, // .data base Address
+            0x00030000, // heap base address
+            0x0003fffc, // stack pointer $sp
+            0x0003fffc, // stack base address
+            0x0003ffff, // highest address in user space
+            0x00040000, // lowest address in kernel space
+            0x0007ff00, // MMIO base address
+            0x0007ffff, // highest address in kernel (and memory)
+            0x0003ffff, // data segment limit address
+            0x0000ffff, // text limit address
+            0x00030000, // stack limit address
+            0x0007ffff // memory map limit address
+    };
 
     public MemoryConfigurations() {
 
     }
 
-
     public static void buildConfigurationCollection() {
         if (configurations == null) {
             configurations = new ArrayList<>();
-            configurations.add(new MemoryConfiguration("Default", "Default", configurationItemNames, defaultConfigurationItemValues));
-            configurations.add(new MemoryConfiguration("CompactDataAtZero", "Compact, Data at Address 0", configurationItemNames, dataBasedCompactConfigurationItemValues));
-            configurations.add(new MemoryConfiguration("CompactTextAtZero", "Compact, Text at Address 0", configurationItemNames, textBasedCompactConfigurationItemValues));
+            configurations.add(new MemoryConfiguration("Default", "Default", configurationItemNames,
+                    defaultConfigurationItemValues));
+            configurations.add(new MemoryConfiguration("CompactDataAtZero", "Compact, Data at Address 0",
+                    configurationItemNames, dataBasedCompactConfigurationItemValues));
+            configurations.add(new MemoryConfiguration("CompactTextAtZero", "Compact, Text at Address 0",
+                    configurationItemNames, textBasedCompactConfigurationItemValues));
+            configurations.add(new MemoryConfiguration("Custom", "Custom CPU, Text at Address 0",
+                    configurationItemNames, customConfigurationItemValues));
             defaultConfiguration = configurations.get(0);
             currentConfiguration = defaultConfiguration;
             // Get current config from settings
-            //String currentConfigurationIdentifier = Globals.getSettings().getMemoryConfiguration();
+            // String currentConfigurationIdentifier =
+            // Globals.getSettings().getMemoryConfiguration();
             setCurrentConfiguration(getConfigurationByName(Globals.getSettings().getMemoryConfiguration()));
-            //	Iterator configurationsIterator = getConfigurationsIterator();
-            //	while (configurationsIterator.hasNext()) {
-            //  MemoryConfiguration config = (MemoryConfiguration)configurationsIterator.next();
-            //	  if (currentConfigurationIdentifier.equals(config.getConfigurationIdentifier())) {
-            //	     setCurrentConfiguration(config);
-            //			}
-            //	   }
+            // Iterator configurationsIterator = getConfigurationsIterator();
+            // while (configurationsIterator.hasNext()) {
+            // MemoryConfiguration config =
+            // (MemoryConfiguration)configurationsIterator.next();
+            // if
+            // (currentConfigurationIdentifier.equals(config.getConfigurationIdentifier()))
+            // {
+            // setCurrentConfiguration(config);
+            // }
+            // }
         }
     }
 
@@ -178,7 +203,6 @@ public class MemoryConfigurations {
         }
         return null;
     }
-
 
     public static MemoryConfiguration getDefaultConfiguration() {
         if (defaultConfiguration == null) {
@@ -211,8 +235,7 @@ public class MemoryConfigurations {
         }
     }
 
-
-    ////  Use these to intialize Memory static variables at launch
+    //// Use these to intialize Memory static variables at launch
 
     public static int getDefaultTextBaseAddress() {
         return defaultConfigurationItemValues[0];
@@ -277,6 +300,5 @@ public class MemoryConfigurations {
     public int getMemoryMapLimitAddress() {
         return defaultConfigurationItemValues[15];
     }
-
 
 }

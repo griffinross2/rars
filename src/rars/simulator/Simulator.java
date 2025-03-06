@@ -1,6 +1,7 @@
 package rars.simulator;
 
 import rars.*;
+import rars.Settings.Bool;
 import rars.riscv.hardware.*;
 import rars.riscv.BasicInstruction;
 import rars.riscv.Instruction;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Observable;
 
-	/*
+/*
 Copyright (c) 2003-2010,  Pete Sanderson and Kenneth Vollmar
 
 Developed by Pete Sanderson (psanderson@otterbein.edu)
@@ -39,7 +40,7 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 (MIT license, http://www.opensource.org/licenses/mit-license.html)
- */
+*/
 
 /**
  * Used to simulate the execution of an assembled source program.
@@ -50,7 +51,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 public class Simulator extends Observable {
     private SimThread simulatorThread;
-    private static Simulator simulator = null;  // Singleton object
+    private static Simulator simulator = null; // Singleton object
     private static Runnable interactiveGUIUpdater = null;
 
     /**
@@ -59,7 +60,7 @@ public class Simulator extends Observable {
     public enum Reason {
         BREAKPOINT,
         EXCEPTION,
-        MAX_STEPS,         // includes step mode (where maxSteps is 1)
+        MAX_STEPS, // includes step mode (where maxSteps is 1)
         NORMAL_TERMINATION,
         CLIFF_TERMINATION, // run off bottom of program
         PAUSE,
@@ -72,9 +73,10 @@ public class Simulator extends Observable {
      * @return the Simulator object in use
      */
     public static Simulator getInstance() {
-        // Do NOT change this to create the Simulator at load time (in declaration above)!
+        // Do NOT change this to create the Simulator at load time (in declaration
+        // above)!
         // Its constructor looks for the GUI, which at load time is not created yet,
-        // and incorrectly leaves interactiveGUIUpdater null!  This causes runtime
+        // and incorrectly leaves interactiveGUIUpdater null! This causes runtime
         // exceptions while running in timed mode.
         if (simulator == null) {
             simulator = new Simulator();
@@ -90,11 +92,15 @@ public class Simulator extends Observable {
     }
 
     /**
-     * Simulate execution of given source program (in this thread).  It must have already been assembled.
+     * Simulate execution of given source program (in this thread). It must have
+     * already been assembled.
      *
-     * @param pc          address of first instruction to simulate; this goes into program counter
-     * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
-     * @param breakPoints array of breakpoint program counter values, use null if none
+     * @param pc          address of first instruction to simulate; this goes into
+     *                    program counter
+     * @param maxSteps    maximum number of steps to perform before returning false
+     *                    (0 or less means no max)
+     * @param breakPoints array of breakpoint program counter values, use null if
+     *                    none
      * @return true if execution completed, false otherwise
      * @throws SimulationException Throws exception if run-time exception occurs.
      **/
@@ -105,7 +111,8 @@ public class Simulator extends Observable {
         SimulationException pe = simulatorThread.pe;
         boolean done = simulatorThread.done;
         Reason out = simulatorThread.constructReturnReason;
-        if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
+        if (done)
+            SystemIO.resetFiles(); // close any files opened in the process of simulating
         this.simulatorThread = null;
         if (pe != null) {
             throw pe;
@@ -114,11 +121,15 @@ public class Simulator extends Observable {
     }
 
     /**
-     * Start simulated execution of given source program (in a new thread).  It must have already been assembled.
+     * Start simulated execution of given source program (in a new thread). It must
+     * have already been assembled.
      *
-     * @param pc          address of first instruction to simulate; this goes into program counter
-     * @param maxSteps    maximum number of steps to perform before returning false (0 or less means no max)
-     * @param breakPoints array of breakpoint program counter values, use null if none
+     * @param pc          address of first instruction to simulate; this goes into
+     *                    program counter
+     * @param maxSteps    maximum number of steps to perform before returning false
+     *                    (0 or less means no max)
+     * @param breakPoints array of breakpoint program counter values, use null if
+     *                    none
      **/
 
     public void startSimulation(int pc, int maxSteps, int[] breakPoints) {
@@ -126,10 +137,9 @@ public class Simulator extends Observable {
         new Thread(simulatorThread, "RISCV").start();
     }
 
-
     /**
      * Set the volatile stop boolean variable checked by the execution
-     * thread at the end of each instruction execution.  If variable
+     * thread at the end of each instruction execution. If variable
      * is found to be true, the execution thread will depart
      * gracefully so the main thread handling the GUI can take over.
      * This is used by both STOP and PAUSE features.
@@ -152,10 +162,12 @@ public class Simulator extends Observable {
         interruptExecution(Reason.PAUSE);
     }
 
-    /* This interface is required by the Asker class in MessagesPane
+    /*
+     * This interface is required by the Asker class in MessagesPane
      * to be notified about the fact that the user has requested to
      * stop the execution. When that happens, it must unblock the
-     * simulator thread. */
+     * simulator thread.
+     */
     public interface StopListener {
         void stopped(Simulator s);
     }
@@ -171,9 +183,9 @@ public class Simulator extends Observable {
     }
 
     // The Simthread object will call this method when it enters and returns from
-    // its run() method.  These signal start and stop, respectively, of
-    // simulation execution.  The observer can then adjust its own state depending
-    // on the execution state.  Note that "stop" and "done" are not the same thing.
+    // its run() method. These signal start and stop, respectively, of
+    // simulation execution. The observer can then adjust its own state depending
+    // on the execution state. Note that "stop" and "done" are not the same thing.
     // "stop" just means it is leaving execution state; this could be triggered
     // by Stop button, by Pause button, by Step button, by runtime exception, by
     // instruction count limit, by breakpoint, or by end of simulation (truly done).
@@ -185,14 +197,16 @@ public class Simulator extends Observable {
     }
 
     public void interrupt() {
-        if (simulatorThread == null) return;
+        if (simulatorThread == null)
+            return;
         simulatorThread.interrupt();
     }
 
     /**
      * Perform the simulated execution. It is "interrupted" when main thread sets
-     * the "stop" variable to true. The variable is tested before the next instruction
-     * is simulated.  Thus interruption occurs in a tightly controlled fashion.
+     * the "stop" variable to true. The variable is tested before the next
+     * instruction
+     * is simulated. Thus interruption occurs in a tightly controlled fashion.
      */
 
     class SimThread implements Runnable {
@@ -204,11 +218,14 @@ public class Simulator extends Observable {
         private Reason constructReturnReason;
 
         /**
-         * SimThread constructor.  Receives all the information it needs to simulate execution.
+         * SimThread constructor. Receives all the information it needs to simulate
+         * execution.
          *
          * @param pc          address in text segment of first instruction to simulate
-         * @param maxSteps    maximum number of instruction steps to simulate.  Default of -1 means no maximum
-         * @param breakPoints array of breakpoints (instruction addresses) specified by user
+         * @param maxSteps    maximum number of instruction steps to simulate. Default
+         *                    of -1 means no maximum
+         * @param breakPoints array of breakpoints (instruction addresses) specified by
+         *                    user
          */
         SimThread(int pc, int maxSteps, int[] breakPoints) {
             this.pc = pc;
@@ -220,7 +237,7 @@ public class Simulator extends Observable {
 
         /**
          * Sets to "true" the volatile boolean variable that is tested after each
-         * instruction is executed.  After calling this method, the next test
+         * instruction is executed. After calling this method, the next test
          * will yield "true" and "construct" will return.
          *
          * @param reason the Reason for stopping (PAUSE or STOP)
@@ -233,7 +250,10 @@ public class Simulator extends Observable {
 
         private void startExecution() {
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_START,
-                    maxSteps,(Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                    maxSteps,
+                    (Globals.getGui() != null || Globals.runSpeedPanelExists)
+                            ? RunSpeedPanel.getInstance().getRunSpeed()
+                            : RunSpeedPanel.UNLIMITED_SPEED,
                     pc, null, pe, done));
         }
 
@@ -241,9 +261,13 @@ public class Simulator extends Observable {
             this.done = done;
             this.constructReturnReason = reason;
             SystemIO.flush(true);
-            if (done) SystemIO.resetFiles(); // close any files opened in the process of simulating
+            if (done)
+                SystemIO.resetFiles(); // close any files opened in the process of simulating
             Simulator.getInstance().notifyObserversOfExecution(new SimulatorNotice(SimulatorNotice.SIMULATOR_STOP,
-                    maxSteps, (Globals.getGui() != null || Globals.runSpeedPanelExists)?RunSpeedPanel.getInstance().getRunSpeed():RunSpeedPanel.UNLIMITED_SPEED,
+                    maxSteps,
+                    (Globals.getGui() != null || Globals.runSpeedPanelExists)
+                            ? RunSpeedPanel.getInstance().getRunSpeed()
+                            : RunSpeedPanel.UNLIMITED_SPEED,
                     pc, reason, pe, done));
         }
 
@@ -281,20 +305,22 @@ public class Simulator extends Observable {
                 RegisterFile.setProgramCounter(base);
                 return true;
             } else {
-                // If we don't have an error handler or exceptions are disabled terminate the process
+                // If we don't have an error handler or exceptions are disabled terminate the
+                // process
                 this.pe = se;
                 stopExecution(true, Reason.EXCEPTION);
                 return false;
             }
         }
 
-
         private boolean handleInterrupt(int value, int cause, int pc) {
             assert (cause & 0x80000000) != 0 : "Traps cannot be handled by the interupt handler";
             int code = cause & 0x7FFFFFFF;
 
             // Don't handle cases where that interrupt isn't enabled
-            assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0 && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) != 0) : "The interrupt handler must be enabled";
+            assert ((ControlAndStatusRegisterFile.getValue("ustatus") & 0x1) != 0
+                    && (ControlAndStatusRegisterFile.getValue("uie") & (1 << code)) != 0)
+                    : "The interrupt handler must be enabled";
 
             // set the relevant CSRs
             ControlAndStatusRegisterFile.updateRegister("ucause", cause);
@@ -322,7 +348,8 @@ public class Simulator extends Observable {
                 RegisterFile.setProgramCounter(base);
                 return true;
             } else {
-                // If we don't have an error handler or exceptions are disabled terminate the process
+                // If we don't have an error handler or exceptions are disabled terminate the
+                // process
                 this.pe = new SimulationException("Interrupt handler was not supplied, but interrupt enable was high");
                 stopExecution(true, Reason.EXCEPTION);
                 return false;
@@ -335,45 +362,52 @@ public class Simulator extends Observable {
 
         public void run() {
             // The next two statements are necessary for GUI to be consistently updated
-            // before the simulation gets underway.  Without them, this happens only intermittently,
-            // with a consequence that some simulations are interruptable using PAUSE/STOP and others
+            // before the simulation gets underway. Without them, this happens only
+            // intermittently,
+            // with a consequence that some simulations are interruptable using PAUSE/STOP
+            // and others
             // are not (because one or the other or both is not yet enabled).
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY - 1);
-            Thread.yield();  // let the main thread run a bit to finish updating the GUI
+            Thread.yield(); // let the main thread run a bit to finish updating the GUI
 
             if (breakPoints == null || breakPoints.length == 0) {
                 breakPoints = null;
             } else {
-                Arrays.sort(breakPoints);  // must be pre-sorted for binary search
+                Arrays.sort(breakPoints); // must be pre-sorted for binary search
             }
 
             startExecution();
 
-            // *******************  PS addition 26 July 2006  **********************
+            // ******************* PS addition 26 July 2006 **********************
             // A couple statements below were added for the purpose of assuring that when
             // "back stepping" is enabled, every instruction will have at least one entry
-            // on the back-stepping stack.  Most instructions will because they write either
-            // to a register or memory.  But "nop" and branches not taken do not.  When the
+            // on the back-stepping stack. Most instructions will because they write either
+            // to a register or memory. But "nop" and branches not taken do not. When the
             // user is stepping backward through the program, the stack is popped and if
-            // an instruction has no entry it will be skipped over in the process.  This has
+            // an instruction has no entry it will be skipped over in the process. This has
             // no effect on the correctness of the mechanism but the visual jerkiness when
-            // instruction highlighting skips such instrutions is disruptive.  Current solution
-            // is to add a "do nothing" stack entry for instructions that do no write anything.
+            // instruction highlighting skips such instrutions is disruptive. Current
+            // solution
+            // is to add a "do nothing" stack entry for instructions that do no write
+            // anything.
             // To keep this invisible to the "simulate()" method writer, we
-            // will push such an entry onto the stack here if there is none for this instruction
-            // by the time it has completed simulating.  This is done by the IF statement
-            // just after the call to the simulate method itself.  The BackStepper method does
-            // the aforementioned check and decides whether to push or not.  The result
-            // is a a smoother interaction experience.  But it comes at the cost of slowing
+            // will push such an entry onto the stack here if there is none for this
+            // instruction
+            // by the time it has completed simulating. This is done by the IF statement
+            // just after the call to the simulate method itself. The BackStepper method
+            // does
+            // the aforementioned check and decides whether to push or not. The result
+            // is a a smoother interaction experience. But it comes at the cost of slowing
             // simulation speed for flat-out runs, for every instruction executed even
-            // though very few will require the "do nothing" stack entry.  For stepped or
+            // though very few will require the "do nothing" stack entry. For stepped or
             // timed execution the slower execution speed is not noticeable.
             //
-            // To avoid this cost I tried a different technique: back-fill with "do nothings"
-            // during the backstepping itself when this situation is recognized.  Problem
+            // To avoid this cost I tried a different technique: back-fill with "do
+            // nothings"
+            // during the backstepping itself when this situation is recognized. Problem
             // was in recognizing all possible situations in which the stack contained such
-            // a "gap".  It became a morass of special cases and it seemed every weird test
-            // case revealed another one.  In addition, when a program
+            // a "gap". It became a morass of special cases and it seemed every weird test
+            // case revealed another one. In addition, when a program
             // begins with one or more such instructions ("nop" and branches not taken),
             // the backstep button is not enabled until a "real" instruction is executed.
             // This is noticeable in stepped mode.
@@ -385,18 +419,21 @@ public class Simulator extends Observable {
             boolean ebreak = false, waiting = false;
 
             // Volatile variable initialized false but can be set true by the main thread.
-            // Used to stop or pause a running program.  See stopSimulation() above.
+            // Used to stop or pause a running program. See stopSimulation() above.
             while (!stop) {
                 SystemIO.flush(false);
-                // Perform the RISCV instruction in synchronized block.  If external threads agree
+                // Perform the RISCV instruction in synchronized block. If external threads
+                // agree
                 // to access memory and registers only through synchronized blocks on same
                 // lock variable, then full (albeit heavy-handed) protection of memory and
-                // registers is assured.  Not as critical for reading from those resources.
+                // registers is assured. Not as critical for reading from those resources.
                 Globals.memoryAndRegistersLock.lock();
                 try {
                     // Handle pending interupts and traps first
-                    long uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"), uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
-                    boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus") & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
+                    long uip = ControlAndStatusRegisterFile.getValueNoNotify("uip"),
+                            uie = ControlAndStatusRegisterFile.getValueNoNotify("uie");
+                    boolean IE = (ControlAndStatusRegisterFile.getValueNoNotify("ustatus")
+                            & ControlAndStatusRegisterFile.INTERRUPT_ENABLE) != 0;
                     // make sure no interrupts sneak in while we are processing them
                     pc = RegisterFile.getProgramCounter();
                     synchronized (InterruptController.lock) {
@@ -405,39 +442,55 @@ public class Simulator extends Observable {
                                 pendingTrap = InterruptController.trapPending();
                         // This is the explicit (in the spec) order that interrupts should be serviced
                         if (IE && pendingExternal && (uie & ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT) != 0) {
-                            if (handleInterrupt(InterruptController.claimExternal(), SimulationException.EXTERNAL_INTERRUPT, pc)) {
+                            if (handleInterrupt(InterruptController.claimExternal(),
+                                    SimulationException.EXTERNAL_INTERRUPT, pc)) {
                                 pendingExternal = false;
                                 uip &= ~0x100;
                             } else {
-                                return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
+                                return; // if the interrupt can't be handled, but the interrupt enable bit is high,
+                                        // thats an error
                             }
-                        } else if (IE && (uip & 0x1) != 0 && (uie & ControlAndStatusRegisterFile.SOFTWARE_INTERRUPT) != 0) {
+                        } else if (IE && (uip & 0x1) != 0
+                                && (uie & ControlAndStatusRegisterFile.SOFTWARE_INTERRUPT) != 0) {
                             if (handleInterrupt(0, SimulationException.SOFTWARE_INTERRUPT, pc)) {
                                 uip &= ~0x1;
                             } else {
-                                return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
+                                return; // if the interrupt can't be handled, but the interrupt enable bit is high,
+                                        // thats an error
                             }
                         } else if (IE && pendingTimer && (uie & ControlAndStatusRegisterFile.TIMER_INTERRUPT) != 0) {
-                            if (handleInterrupt(InterruptController.claimTimer(), SimulationException.TIMER_INTERRUPT, pc)) {
+                            if (handleInterrupt(InterruptController.claimTimer(), SimulationException.TIMER_INTERRUPT,
+                                    pc)) {
                                 pendingTimer = false;
                                 uip &= ~0x10;
                             } else {
-                                return; // if the interrupt can't be handled, but the interrupt enable bit is high, thats an error
+                                return; // if the interrupt can't be handled, but the interrupt enable bit is high,
+                                        // thats an error
                             }
-                        } else if (pendingTrap) { // if we have a pending trap and aren't handling an interrupt it must be handled
-                            if (handleTrap(InterruptController.claimTrap(), pc - Instruction.INSTRUCTION_LENGTH)) { // account for that the PC has already been incremented
+                        } else if (pendingTrap) { // if we have a pending trap and aren't handling an interrupt it must
+                                                  // be handled
+                            if (handleTrap(InterruptController.claimTrap(), pc - Instruction.INSTRUCTION_LENGTH)) { // account
+                                                                                                                    // for
+                                                                                                                    // that
+                                                                                                                    // the
+                                                                                                                    // PC
+                                                                                                                    // has
+                                                                                                                    // already
+                                                                                                                    // been
+                                                                                                                    // incremented
                             } else {
                                 return;
                             }
                         }
-                        uip |= (pendingExternal ? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT : 0) | (pendingTimer ? ControlAndStatusRegisterFile.TIMER_INTERRUPT : 0);
+                        uip |= (pendingExternal ? ControlAndStatusRegisterFile.EXTERNAL_INTERRUPT : 0)
+                                | (pendingTimer ? ControlAndStatusRegisterFile.TIMER_INTERRUPT : 0);
                     }
                     if (uip != ControlAndStatusRegisterFile.getValueNoNotify("uip")) {
                         ControlAndStatusRegisterFile.updateRegister("uip", uip);
                     }
 
                     // always handle interrupts and traps before quiting
-                    // Check number of instructions executed.  Return if at limit (-1 is no limit).
+                    // Check number of instructions executed. Return if at limit (-1 is no limit).
                     if (maxSteps > 0) {
                         steps++;
                         if (steps > maxSteps) {
@@ -454,9 +507,11 @@ public class Simulator extends Observable {
                     } catch (AddressErrorException e) {
                         SimulationException tmp;
                         if (e.getType() == SimulationException.LOAD_ACCESS_FAULT) {
-                            tmp = new SimulationException("Instruction load access error", SimulationException.INSTRUCTION_ACCESS_FAULT);
+                            tmp = new SimulationException("Instruction load access error",
+                                    SimulationException.INSTRUCTION_ACCESS_FAULT);
                         } else {
-                            tmp = new SimulationException("Instruction load alignment error", SimulationException.INSTRUCTION_ADDR_MISALIGNED);
+                            tmp = new SimulationException("Instruction load alignment error",
+                                    SimulationException.INSTRUCTION_ADDR_MISALIGNED);
                         }
                         if (!InterruptController.registerSynchronousTrap(tmp, pc)) {
                             this.pe = tmp;
@@ -477,7 +532,8 @@ public class Simulator extends Observable {
                         if (instruction == null) {
                             // TODO: Proper error handling here
                             throw new SimulationException(statement,
-                                    "undefined instruction (" + Binary.intToHexString(statement.getBinaryStatement()) + ")",
+                                    "undefined instruction (" + Binary.intToHexString(statement.getBinaryStatement())
+                                            + ")",
                                     SimulationException.ILLEGAL_INSTRUCTION);
                         }
                         // THIS IS WHERE THE INSTRUCTION EXECUTION IS ACTUALLY SIMULATED!
@@ -523,16 +579,18 @@ public class Simulator extends Observable {
 
                 // Update cycle(h) and instret(h)
                 long cycle = ControlAndStatusRegisterFile.getValueNoNotify("cycle"),
-                         instret = ControlAndStatusRegisterFile.getValueNoNotify("instret"),
-                         time = System.currentTimeMillis();;
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle",cycle+1);
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("instret",instret+1);
-                ControlAndStatusRegisterFile.updateRegisterBackdoor("time",time);
+                        instret = ControlAndStatusRegisterFile.getValueNoNotify("instret"),
+                        time = System.currentTimeMillis();
+                ;
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("cycle", cycle + 1);
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("instret", instret + 1);
+                ControlAndStatusRegisterFile.updateRegisterBackdoor("time", time);
 
-                //     Return if we've reached a breakpoint.
+                // Return if we've reached a breakpoint.
                 if (ebreak || (breakPoints != null) &&
                         (Arrays.binarySearch(breakPoints, RegisterFile.getProgramCounter()) >= 0)) {
-                    stopExecution(false, Reason.BREAKPOINT);
+                    boolean exitOnEbreak = Globals.getSettings().getBooleanSetting(Bool.EXIT_ON_EBREAK);
+                    stopExecution(exitOnEbreak, exitOnEbreak ? Reason.NORMAL_TERMINATION : Reason.BREAKPOINT);
                     return;
                 }
 
@@ -551,18 +609,20 @@ public class Simulator extends Observable {
                 }
 
                 // schedule GUI update only if: there is in fact a GUI! AND
-                //                              using Run,  not Step (maxSteps != 1) AND
-                //                              running slowly enough for GUI to keep up
+                // using Run, not Step (maxSteps != 1) AND
+                // running slowly enough for GUI to keep up
                 if (interactiveGUIUpdater != null && maxSteps != 1 &&
                         RunSpeedPanel.getInstance().getRunSpeed() < RunSpeedPanel.UNLIMITED_SPEED) {
                     SwingUtilities.invokeLater(interactiveGUIUpdater);
                 }
-                if (Globals.getGui() != null || Globals.runSpeedPanelExists) { // OR added by DPS 24 July 2008 to enable speed control by stand-alone tool
+                if (Globals.getGui() != null || Globals.runSpeedPanelExists) { // OR added by DPS 24 July 2008 to enable
+                                                                               // speed control by stand-alone tool
                     if (maxSteps != 1 &&
                             RunSpeedPanel.getInstance().getRunSpeed() < RunSpeedPanel.UNLIMITED_SPEED) {
                         try {
                             // TODO: potentially use this.wait so it can be interrupted
-                            Thread.sleep((int) (1000 / RunSpeedPanel.getInstance().getRunSpeed())); // make sure it's never zero!
+                            Thread.sleep((int) (1000 / RunSpeedPanel.getInstance().getRunSpeed())); // make sure it's
+                                                                                                    // never zero!
                         } catch (InterruptedException e) {
                         }
                     }
@@ -574,8 +634,8 @@ public class Simulator extends Observable {
 
     private class UpdateGUI implements Runnable {
         public void run() {
-            if (Globals.getGui().getRegistersPane().getSelectedComponent() ==
-                    Globals.getGui().getMainPane().getExecutePane().getRegistersWindow()) {
+            if (Globals.getGui().getRegistersPane().getSelectedComponent() == Globals.getGui().getMainPane()
+                    .getExecutePane().getRegistersWindow()) {
                 Globals.getGui().getMainPane().getExecutePane().getRegistersWindow().updateRegisters();
             } else {
                 Globals.getGui().getMainPane().getExecutePane().getFloatingPointWindow().updateRegisters();
